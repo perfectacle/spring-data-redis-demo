@@ -6,23 +6,23 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
-private const val KEY = "key"
-private const val VALUE = "value"
+private const val KEY = "string-key"
+private const val VALUE = "string-value"
 
 @SpringBootTest
-class RedisServiceTest {
+class StringRedisServiceTest {
     @Autowired
-    private lateinit var redisService: RedisService
+    private lateinit var stringRedisService: StringRedisService
 
     @BeforeEach
     fun setup() {
-        redisService.delete(KEY)
+        stringRedisService.delete(KEY)
     }
 
     @Test
     fun `레디스에 캐시가 없으면 null을 반환한다`() {
         // When
-        val actual = redisService.get(KEY)
+        val actual = stringRedisService.get(KEY)
 
         // Then
         assertThat(actual).isNull()
@@ -31,10 +31,10 @@ class RedisServiceTest {
     @Test
     fun `레디스에 캐시가 있으면 캐시를 반환한다`() {
         // Given
-        redisService.set(KEY, VALUE)
+        stringRedisService.set(KEY, VALUE)
 
         // When
-        val actual = redisService.get(KEY)
+        val actual = stringRedisService.get(KEY)
 
         // Then
         assertThat(actual).isEqualTo(VALUE)

@@ -9,6 +9,7 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory
 import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.core.StringRedisTemplate
 import org.springframework.data.redis.serializer.StringRedisSerializer
 
 @Configuration
@@ -46,5 +47,14 @@ class RedisConfig {
             keySerializer = StringRedisSerializer()
             valueSerializer = StringRedisSerializer()
         }
+    }
+
+    // RedisAutoConfiguration 클래스에 stringRedisTemplate bean이 이미 정의돼있기 때문에 이름을 다르게 설정
+    @Bean
+    fun simpleStringRedisTemplate(
+            connectionFactory: RedisConnectionFactory
+    ): RedisTemplate<String, String> {
+        // String Redis Template은 key/value serializer를 설정하지 않아도 기본적으로 StringRedisSerializer가 세팅된다.
+        return StringRedisTemplate(connectionFactory)
     }
 }
