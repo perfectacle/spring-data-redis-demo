@@ -7,14 +7,14 @@ import org.springframework.stereotype.Service
 class RedisService(
         private val redisTemplate: RedisTemplate<String, String>
 ) {
+    private val valueOperations = redisTemplate.opsForValue()
+
     fun set(key: String, value: String) {
-        val opsForValue = redisTemplate.opsForValue()
-        opsForValue[key] = value
+        valueOperations[key] = value
     }
 
     fun get(key: String): String? {
-        val opsForValue = redisTemplate.opsForValue()
-        return opsForValue[key]
+        return valueOperations[key]
     }
 
     fun delete(key: String) {

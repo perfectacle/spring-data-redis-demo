@@ -9,6 +9,7 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory
 import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.serializer.StringRedisSerializer
 
 @Configuration
 class RedisConfig {
@@ -37,8 +38,13 @@ class RedisConfig {
     fun redisTemplate(
             connectionFactory: RedisConnectionFactory
     ): RedisTemplate<String, String> {
-        val redisTemplate = RedisTemplate<String, String>()
-        redisTemplate.setConnectionFactory(connectionFactory)
-        return redisTemplate
+        return RedisTemplate<String, String>().apply {
+            setConnectionFactory(connectionFactory)
+
+            // key/value serializer를 설정하지 않아도 어플리케이션이 돌아가는데는 문제가 없다.
+            // 하지만 redis-cli로 raw key/value를 보면 \xac\xed\x00\x05t\x00\x03key와 같이 이상한 유니코드 문자열이 들어간다.
+            keySerializer = StringRedisSerializer()
+            valueSerializer = StringRedisSerializer()
+        }
     }
 }
