@@ -8,10 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
 private const val KEY = "json-key"
-private val VALUE = JsonObject()
+private val VALUE = JsonObject("11")
 
 @SpringBootTest
-class JsonRedisServiceTest {
+class JsonRedisServiceTest: DemoApplicationTests() {
     @Autowired
     private lateinit var jsonRedisService: JsonRedisService
     @Autowired

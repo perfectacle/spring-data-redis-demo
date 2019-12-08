@@ -18,8 +18,12 @@ class RedisCallbackService(
 
     fun get(key: String): String? {
         return redisTemplate.execute {
-            val bytes = it[key.toByteArray()] ?: byteArrayOf()
-            String(bytes)
+            val bytes = it[key.toByteArray()]
+            if (bytes != null) {
+                String(bytes)
+            } else {
+                bytes
+            }
         }
     }
 

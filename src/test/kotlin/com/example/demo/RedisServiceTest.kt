@@ -10,7 +10,7 @@ private const val KEY = "key"
 private const val VALUE = "value"
 
 @SpringBootTest
-class RedisServiceTest {
+class RedisServiceTest: DemoApplicationTests() {
     @Autowired
     private lateinit var redisService: RedisService
 

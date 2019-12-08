@@ -10,7 +10,7 @@ private const val KEY = "string-key"
 private const val VALUE = "string-value"
 
 @SpringBootTest
-class StringRedisServiceTest {
+class StringRedisServiceTest: DemoApplicationTests() {
     @Autowired
     private lateinit var stringRedisService: StringRedisService
 

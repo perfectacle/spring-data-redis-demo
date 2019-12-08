@@ -11,7 +11,7 @@ private const val KEY = "callback-key"
 private const val VALUE = "callback-value"
 
 @SpringBootTest
-class RedisCallbackServiceTest {
+class RedisCallbackServiceTest: DemoApplicationTests() {
     @Autowired
     private lateinit var redisCallbackService: RedisCallbackService
 

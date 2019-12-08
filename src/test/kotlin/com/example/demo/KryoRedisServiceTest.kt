@@ -7,10 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
 private const val KEY = "kryo-key"
-private val VALUE = JsonObject()
+private val VALUE = JsonObject("11")
 
 @SpringBootTest
-class KryoRedisServiceTest {
+class KryoRedisServiceTest: DemoApplicationTests() {
     @Autowired
     private lateinit var kryoRedisService: KryoRedisService
 
