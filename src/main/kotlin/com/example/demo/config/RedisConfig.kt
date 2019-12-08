@@ -85,4 +85,15 @@ class RedisConfig(
             valueSerializer = GenericJackson2JsonRedisSerializer(objectMapper)
         }
     }
+
+    @Bean
+    fun kryoRedisTemplate(
+            connectionFactory: RedisConnectionFactory
+    ): RedisTemplate<String, Any> {
+        return RedisTemplate<String, Any>().apply {
+            setConnectionFactory(connectionFactory)
+            keySerializer = StringRedisSerializer()
+            valueSerializer = KryoSerializer()
+        }
+    }
 }

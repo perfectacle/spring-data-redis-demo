@@ -4,10 +4,10 @@ import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 
 @Service
-class JsonRedisService(
-        private val jsonRedisTemplate: RedisTemplate<String, Any>
+class KryoRedisService(
+        private val kryoRedisTemplate: RedisTemplate<String, Any>
 ) {
-    private val valueOperations = jsonRedisTemplate.opsForValue()
+    private val valueOperations = kryoRedisTemplate.opsForValue()
 
     fun set(key: String, value: Any) {
         valueOperations[key] = value
@@ -18,6 +18,6 @@ class JsonRedisService(
     }
 
     fun delete(key: String) {
-        jsonRedisTemplate.delete(key)
+        kryoRedisTemplate.delete(key)
     }
 }
