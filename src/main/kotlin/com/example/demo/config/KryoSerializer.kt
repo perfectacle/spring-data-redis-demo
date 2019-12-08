@@ -6,6 +6,7 @@ import com.esotericsoftware.kryo.io.Input
 import com.esotericsoftware.kryo.io.Output
 import com.esotericsoftware.kryo.pool.KryoFactory
 import com.esotericsoftware.kryo.pool.KryoPool
+import com.esotericsoftware.kryo.serializers.EnumNameSerializer
 import org.objenesis.strategy.StdInstantiatorStrategy
 import org.springframework.data.redis.serializer.RedisSerializer
 
@@ -13,10 +14,15 @@ import org.springframework.data.redis.serializer.RedisSerializer
 class KryoSerializer: RedisSerializer<Any> {
     private val factory: KryoFactory = KryoFactory {
         val kryo = Kryo()
+
         // 기본 생성자가 없는데 아래 설정 마저도 없으면
         // com.esotericsoftware.kryo.KryoException: Class cannot be created (missing no-arg constructor)을 던짐.
         // 아래 설정은 먼저 기본 생성자로 객체 생성을 시도하고, 실패시에 생성자 없이 객체 생성시도하는 설정.
         kryo.instantiatorStrategy = DefaultInstantiatorStrategy(StdInstantiatorStrategy())
+
+        // enum의 순서가 바뀌어도 정상 동작하게 끔 설정
+        kryo.addDefaultSerializer(Enum::class.java, EnumNameSerializer::class.java)
+
         kryo
     }
 
