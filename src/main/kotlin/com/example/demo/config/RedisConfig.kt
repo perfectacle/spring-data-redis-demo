@@ -1,5 +1,6 @@
 package com.example.demo.config
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.lettuce.core.ReadFrom
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -10,10 +11,13 @@ import org.springframework.data.redis.connection.lettuce.LettuceClientConfigurat
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.core.StringRedisTemplate
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer
 import org.springframework.data.redis.serializer.StringRedisSerializer
 
 @Configuration
-class RedisConfig {
+class RedisConfig(
+        private val objectMapper: ObjectMapper
+) {
     @Bean
     fun serverConfig(): RedisConfiguration {
         return RedisStandaloneConfiguration("localhost")
@@ -42,8 +46,18 @@ class RedisConfig {
         return RedisTemplate<String, String>().apply {
             setConnectionFactory(connectionFactory)
 
-            // key/value serializer를 설정하지 않아도 어플리케이션이 돌아가는데는 문제가 없다.
-            // 하지만 redis-cli로 raw key/value를 보면 \xac\xed\x00\x05t\x00\x03key와 같이 이상한 유니코드 문자열이 들어간다.
+            /**
+             * By default, RedisCache and RedisTemplate are configured to use Java native serialization.
+             * Java native serialization is known for allowing remote code execution caused by payloads
+             * that exploit vulnerable libraries and classes injecting unverified bytecode.
+             * Manipulated input could lead to unwanted code execution in the application during the deserialization step.
+             * As a consequence, do not use serialization in untrusted environments.
+             * In general, we strongly recommend any other message format (such as JSON) instead.
+             *
+             * 기본적으로 JdkSerializationRedisSerializer가 사용된다.
+             * JdkSerializationRedisSerializer를 사용했을 때 redis-cli로 raw key/value를 보면
+             * \xac\xed\x00\x05t\x00\x03key와 같이 이상한 유니코드 문자열이 들어간다.
+             */
             keySerializer = StringRedisSerializer()
             valueSerializer = StringRedisSerializer()
         }
@@ -56,5 +70,19 @@ class RedisConfig {
     ): RedisTemplate<String, String> {
         // String Redis Template은 key/value serializer를 설정하지 않아도 기본적으로 StringRedisSerializer가 세팅된다.
         return StringRedisTemplate(connectionFactory)
+    }
+
+    @Bean
+    fun jsonRedisTemplate(
+            connectionFactory: RedisConnectionFactory
+    ): RedisTemplate<String, Any> {
+        return RedisTemplate<String, Any>().apply {
+            setConnectionFactory(connectionFactory)
+            keySerializer = StringRedisSerializer()
+
+            // objectMapper를 주입하지 않으면 레디스에서 값을 꺼내올 때
+            // com.fasterxml.jackson.databind.exc.InvalidTypeIdException 던진다.
+            valueSerializer = GenericJackson2JsonRedisSerializer(objectMapper)
+        }
     }
 }
